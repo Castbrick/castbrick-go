@@ -23,16 +23,13 @@ func (r *ContactsResource) Get(ctx context.Context, id string) (*Contact, error)
 	return &out, r.c.get(ctx, "/audience/contacts/"+id, &out)
 }
 
-func (r *ContactsResource) Create(ctx context.Context, emails, phoneNumbers string) (int, error) {
+// Create adds one or more contacts from comma/newline-separated phone numbers.
+func (r *ContactsResource) Create(ctx context.Context, phoneNumbers string) error {
 	body := map[string]any{}
-	if emails != "" {
-		body["emails"] = emails
-	}
 	if phoneNumbers != "" {
 		body["phoneNumbers"] = phoneNumbers
 	}
-	var out int
-	return out, r.c.post(ctx, "/audience/contacts", body, &out)
+	return r.c.post(ctx, "/audience/contacts", body, nil)
 }
 
 func (r *ContactsResource) Delete(ctx context.Context, id string) error {
@@ -49,9 +46,10 @@ func (r *ContactsResource) GetList(ctx context.Context, id string) (*ContactList
 	return &out, r.c.get(ctx, "/audience/lists/"+id, &out)
 }
 
-func (r *ContactsResource) CreateList(ctx context.Context, name string) (*ContactList, error) {
-	var out ContactList
-	return &out, r.c.post(ctx, "/audience/lists", map[string]any{"name": name}, &out)
+// CreateList creates a new contact list and returns the new list ID.
+func (r *ContactsResource) CreateList(ctx context.Context, name string) (string, error) {
+	var out string
+	return out, r.c.post(ctx, "/audience/lists", map[string]any{"name": name}, &out)
 }
 
 func (r *ContactsResource) AddToList(ctx context.Context, listID, contactID string) error {
