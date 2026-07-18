@@ -17,6 +17,10 @@ type CastBrick struct {
 	SMS        *SmsResource
 	Contacts   *ContactsResource
 	Broadcasts *BroadcastsResource
+	Billing    *BillingResource
+	Segments   *SegmentsResource
+	Templates  *TemplatesResource
+	Webhooks   *WebhooksResource
 }
 
 // New creates a CastBrick client with the default HTTP client.
@@ -31,5 +35,9 @@ func NewWithOptions(apiKey, baseURL string, httpClient *http.Client) *CastBrick 
 		SMS:        &SmsResource{c: c},
 		Contacts:   &ContactsResource{c: c},
 		Broadcasts: &BroadcastsResource{c: c},
+		Billing:    &BillingResource{c: c},
+		Segments:   &SegmentsResource{c: c},
+		Templates:  &TemplatesResource{c: c},
+		Webhooks:   &WebhooksResource{c: c},
 	}
 }

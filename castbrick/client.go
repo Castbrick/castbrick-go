@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-const defaultBaseURL = "https://api.castbrick.co"
+const defaultBaseURL = "https://api.castbrick.co/v1"
 
 // Client is the low-level HTTP client used by all resources.
 type Client struct {

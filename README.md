@@ -99,6 +99,31 @@ newID, err := cb.Broadcasts.Duplicate(ctx, id)
 err = cb.Broadcasts.Delete(ctx, id)
 ```
 
+## Billing
+
+```go
+// Get current credit balance
+balance, err := cb.Billing.GetBalance(ctx)
+
+// List available credit packages
+packages, err := cb.Billing.ListPackages(ctx)
+
+// List credit consumption/transaction history
+history, err := cb.Billing.ListTransactions(ctx, "")
+```
+
+## Segments, Templates & Webhooks
+
+The SDK also provides native access to `cb.Segments`, `cb.Templates`, and `cb.Webhooks`.
+
+```go
+// Example: Create a Webhook
+err = cb.Webhooks.Create(ctx, castbrick.CreateWebhookOptions{
+    Url:    "https://yourapp.com/webhooks/castbrick",
+    Events: []string{"sms.delivered", "sms.failed"},
+})
+```
+
 ## Error handling
 
 ```go

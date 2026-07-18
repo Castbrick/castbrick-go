@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0 — 2026-07-18
+
+### New Features
+- **Billing API (`BillingResource`)** — access credit balance, list packages, initiate payments, and view transactions.
+- **Segments API (`SegmentsResource`)** — list, create, update, and delete dynamic audience segments.
+- **Templates API (`TemplatesResource`)** — list, create, update, and delete message templates.
+- **Webhooks API (`WebhooksResource`)** — register endpoints, toggle status, test delivery, list logs, and retry failed webhooks.
+- **`models.go`** — added structs required for `Template`, `Webhook`, `Segment`, and `Billing` payloads and responses.
+
+---
+
 ## 0.1.3 — 2026-06-01
 
 ### Bug Fixes
