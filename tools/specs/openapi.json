@@ -1,0 +1,876 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CastBrick API",
+    "version": "1.0.0",
+    "description": "Official OpenAPI specification for the CastBrick SMS & Communication Platform API."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8787",
+      "description": "Local / Prism Contract Mock Server"
+    },
+    {
+      "url": "https://api.castbrick.co",
+      "description": "CastBrick Production API"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "SendSmsRequest": {
+        "type": "object",
+        "required": ["content"],
+        "properties": {
+          "recipients": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["+244923000000"]
+          },
+          "to": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["+244923000000"]
+          },
+          "content": {
+            "type": "string",
+            "example": "Hello from CastBrick!"
+          },
+          "message": {
+            "type": "string",
+            "example": "Hello from CastBrick!"
+          },
+          "senderId": {
+            "type": "string",
+            "example": "CastBrick"
+          },
+          "scheduledAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "contactListId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "fallback": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      },
+      "SendSmsResponse": {
+        "type": "object",
+        "required": ["messageId", "status", "recipientCount", "timestamp"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "a0000000-0000-0000-0000-000000000001"
+          },
+          "messageId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "a0000000-0000-0000-0000-000000000001"
+          },
+          "status": {
+            "type": "string",
+            "example": "Queued"
+          },
+          "recipientCount": {
+            "type": "integer",
+            "example": 1
+          },
+          "recipientsCount": {
+            "type": "integer",
+            "example": 1
+          },
+          "costAoa": {
+            "type": "number",
+            "example": 10.0
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-09-09T20:00:00.000Z"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-09-09T20:00:00.000Z"
+          }
+        }
+      },
+      "SmsMessage": {
+        "type": "object",
+        "required": ["id", "recipientPhone", "message", "status", "retryCount"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "a0000000-0000-0000-0000-000000000001"
+          },
+          "messageId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "a0000000-0000-0000-0000-000000000001"
+          },
+          "recipientPhone": {
+            "type": "string",
+            "example": "+244923000000"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+244923000000"
+          },
+          "message": {
+            "type": "string",
+            "example": "Hello from CastBrick!"
+          },
+          "content": {
+            "type": "string",
+            "example": "Hello from CastBrick!"
+          },
+          "senderId": {
+            "type": "string",
+            "example": "CastBrick",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "example": "Delivered"
+          },
+          "errorMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "retryCount": {
+            "type": "integer",
+            "example": 0
+          },
+          "scheduledAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "deliveredAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-09-09T20:00:00.000Z"
+          }
+        }
+      },
+      "Contact": {
+        "type": "object",
+        "required": ["id", "tenantId", "createdAt"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "b0000000-0000-0000-0000-000000000001"
+          },
+          "name": {
+            "type": "string",
+            "example": "Jane Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "example": "+244923000000"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+244923000000"
+          },
+          "endpoint": {
+            "type": "string",
+            "example": "+244923000000"
+          },
+          "email": {
+            "type": "string",
+            "example": "jane@example.com"
+          },
+          "tenantId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "00000000-0000-0000-0000-000000000001"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-09-09T20:00:00.000Z"
+          }
+        }
+      },
+      "ContactList": {
+        "type": "object",
+        "required": ["id", "name", "tenantId", "contactCount", "createdAt"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "d0000000-0000-0000-0000-000000000001"
+          },
+          "name": {
+            "type": "string",
+            "example": "Default List"
+          },
+          "contactCount": {
+            "type": "integer",
+            "example": 10
+          },
+          "tenantId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "00000000-0000-0000-0000-000000000001"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-09-09T20:00:00.000Z"
+          }
+        }
+      },
+      "Broadcast": {
+        "type": "object",
+        "required": ["id", "name", "status", "message", "tenantId", "createdAt"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "c0000000-0000-0000-0000-000000000001"
+          },
+          "name": {
+            "type": "string",
+            "example": "Marketing Launch"
+          },
+          "status": {
+            "type": "string",
+            "example": "Completed"
+          },
+          "message": {
+            "type": "string",
+            "example": "Marketing Launch SMS"
+          },
+          "content": {
+            "type": "string",
+            "example": "Marketing Launch SMS"
+          },
+          "totalRecipients": {
+            "type": "integer",
+            "example": 50
+          },
+          "senderId": {
+            "type": "string",
+            "example": "CastBrick",
+            "nullable": true
+          },
+          "contactListId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "scheduledAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "tenantId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "00000000-0000-0000-0000-000000000001"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-09-09T20:00:00.000Z"
+          }
+        }
+      },
+      "BillingBalance": {
+        "type": "object",
+        "required": ["balance", "lowBalanceThreshold", "alertEmail"],
+        "properties": {
+          "balance": {
+            "type": "number",
+            "example": 50000.0
+          },
+          "credits": {
+            "type": "integer",
+            "example": 5000
+          },
+          "currency": {
+            "type": "string",
+            "example": "AOA"
+          },
+          "lowBalanceThreshold": {
+            "type": "number",
+            "example": 500.0
+          },
+          "alertEmail": {
+            "type": "string",
+            "example": "admin@castbrick.co"
+          },
+          "lastAlertSentAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "required": ["error", "message"],
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Unauthorized"
+          },
+          "message": {
+            "type": "string",
+            "example": "Invalid or missing API key."
+          },
+          "status": {
+            "type": "integer",
+            "example": 401
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "System healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" },
+                    "service": { "type": "string", "example": "castbrick-api" },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health check alias",
+        "responses": {
+          "200": {
+            "description": "System healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sms/send": {
+      "post": {
+        "summary": "Send SMS message",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SendSmsRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message queued successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SendSmsResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sms": {
+      "get": {
+        "summary": "List SMS messages",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "pageNumber", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer", "default": 20 } },
+          { "name": "status", "in": "query", "schema": { "type": "string" } },
+          { "name": "phone", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of SMS messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["items", "totalCount", "pageNumber", "pageSize"],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/SmsMessage" }
+                    },
+                    "totalCount": { "type": "integer", "example": 1 },
+                    "pageNumber": { "type": "integer", "example": 1 },
+                    "pageSize": { "type": "integer", "example": 20 },
+                    "totalPages": { "type": "integer", "example": 1 },
+                    "hasNextPage": { "type": "boolean", "example": false },
+                    "hasPreviousPage": { "type": "boolean", "example": false }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sms/{id}": {
+      "get": {
+        "summary": "Get SMS message by ID",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "SMS message details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SmsMessage" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Cancel scheduled SMS",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "204": { "description": "Successfully cancelled" }
+        }
+      }
+    },
+    "/v1/audience/contacts": {
+      "get": {
+        "summary": "List contacts",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "pageNumber", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer", "default": 20 } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated contacts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["items", "totalCount", "pageNumber", "pageSize"],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Contact" }
+                    },
+                    "totalCount": { "type": "integer", "example": 1 },
+                    "pageNumber": { "type": "integer", "example": 1 },
+                    "pageSize": { "type": "integer", "example": 20 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create contacts",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "phone": { "type": "string" },
+                  "phoneNumber": { "type": "string" },
+                  "phoneNumbers": { "type": "string" },
+                  "endpoint": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Contact created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Contact" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/contacts": {
+      "get": {
+        "summary": "List contacts alias",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "pageNumber", "in": "query", "schema": { "type": "integer" } },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated contacts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Contact" }
+                    },
+                    "totalCount": { "type": "integer", "example": 1 },
+                    "pageNumber": { "type": "integer", "example": 1 },
+                    "pageSize": { "type": "integer", "example": 20 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create contacts alias",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Contact created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Contact" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/audience/contacts/{id}": {
+      "get": {
+        "summary": "Get contact by ID",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Contact" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete contact",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "204": { "description": "Deleted successfully" }
+        }
+      }
+    },
+    "/v1/audience/lists": {
+      "get": {
+        "summary": "List contact lists",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Contact lists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/ContactList" }
+                    },
+                    "totalCount": { "type": "integer", "example": 1 },
+                    "pageNumber": { "type": "integer", "example": 1 },
+                    "pageSize": { "type": "integer", "example": 20 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create contact list",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": { "name": { "type": "string", "example": "New List" } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created List ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid",
+                  "example": "d0000000-0000-0000-0000-000000000001"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/broadcasts": {
+      "get": {
+        "summary": "List broadcasts",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "pageNumber", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer", "default": 20 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Broadcasts list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["items", "totalCount", "pageNumber", "pageSize"],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Broadcast" }
+                    },
+                    "totalCount": { "type": "integer", "example": 1 },
+                    "pageNumber": { "type": "integer", "example": 1 },
+                    "pageSize": { "type": "integer", "example": 20 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create broadcast",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": { "type": "string", "example": "Marketing Campaign" },
+                  "message": { "type": "string", "example": "Special offer today!" },
+                  "content": { "type": "string", "example": "Special offer today!" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Broadcast created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Broadcast" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/broadcasts/{id}": {
+      "get": {
+        "summary": "Get broadcast by ID",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Broadcast details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Broadcast" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/balance": {
+      "get": {
+        "summary": "Get billing balance",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Current balance",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BillingBalance" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/push/publish": {
+      "post": {
+        "summary": "Publish push notification",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Push published",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "messageId": { "type": "string", "example": "push_msg_mock_789" },
+                    "delivered": { "type": "boolean", "example": true },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/push/tokens": {
+      "post": {
+        "summary": "Issue push token",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "type": "object" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token issued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": { "type": "string", "example": "push_mock_token_abc123" },
+                    "expiresAt": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

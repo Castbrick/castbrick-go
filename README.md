@@ -1,6 +1,6 @@
 # castbrick-go
 
-Official Go SDK for the [CastBrick](https://castbrick.com) API — send SMS, manage contacts and run broadcasts.
+Official Go SDK for the [CastBrick](https://castbrick.co) API — send SMS, manage contacts and run broadcasts.
 
 ## Installation
 

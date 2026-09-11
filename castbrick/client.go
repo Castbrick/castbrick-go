@@ -25,26 +25,29 @@ func newClient(apiKey, baseURL string, httpClient *http.Client) *Client {
 	return &Client{apiKey: apiKey, baseURL: baseURL, http: httpClient}
 }
 
-func (c *Client) do(ctx context.Context, method, path string, body any, out any) error {
+func (c *Client) newRequest(ctx context.Context, method, path string, body any) (*http.Request, error) {
 	var buf io.Reader
 	if body != nil {
 		b, err := json.Marshal(body)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		buf = bytes.NewReader(b)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, method, c.baseURL+path, buf)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req.Header.Set("Authorization", "Bearer "+c.apiKey)
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
 	req.Header.Set("Accept", "application/json")
+	return req, nil
+}
 
+func (c *Client) do(req *http.Request, out any) error {
 	resp, err := c.http.Do(req)
 	if err != nil {
 		return err
@@ -67,19 +70,35 @@ func (c *Client) do(ctx context.Context, method, path string, body any, out any)
 }
 
 func (c *Client) get(ctx context.Context, path string, out any) error {
-	return c.do(ctx, http.MethodGet, path, nil, out)
+	req, err := c.newRequest(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return err
+	}
+	return c.do(req, out)
 }
 
 func (c *Client) post(ctx context.Context, path string, body, out any) error {
-	return c.do(ctx, http.MethodPost, path, body, out)
+	req, err := c.newRequest(ctx, http.MethodPost, path, body)
+	if err != nil {
+		return err
+	}
+	return c.do(req, out)
 }
 
 func (c *Client) put(ctx context.Context, path string, body, out any) error {
-	return c.do(ctx, http.MethodPut, path, body, out)
+	req, err := c.newRequest(ctx, http.MethodPut, path, body)
+	if err != nil {
+		return err
+	}
+	return c.do(req, out)
 }
 
 func (c *Client) delete(ctx context.Context, path string) error {
-	return c.do(ctx, http.MethodDelete, path, nil, nil)
+	req, err := c.newRequest(ctx, http.MethodDelete, path, nil)
+	if err != nil {
+		return err
+	}
+	return c.do(req, nil)
 }
 
 // APIError is returned when the API responds with a non-2xx status.
