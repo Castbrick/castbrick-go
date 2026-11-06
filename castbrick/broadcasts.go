@@ -2,7 +2,8 @@ package castbrick
 
 import (
 	"context"
-	"fmt"
+	"net/url"
+	"strconv"
 	"time"
 )
 
@@ -25,13 +26,26 @@ type UpdateBroadcastOptions struct {
 }
 
 func (r *BroadcastsResource) List(ctx context.Context, page, pageSize int) (*PagedResult[Broadcast], error) {
+	q := url.Values{}
+	q.Set("pageNumber", strconv.Itoa(page))
+	q.Set("pageSize", strconv.Itoa(pageSize))
 	var out PagedResult[Broadcast]
-	return &out, r.c.get(ctx, fmt.Sprintf("/broadcasts?pageNumber=%d&pageSize=%d", page, pageSize), &out)
+	if err := r.c.getQuery(ctx, "/broadcasts", q, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 func (r *BroadcastsResource) Get(ctx context.Context, id string) (*Broadcast, error) {
+	path, err := pathf("/broadcasts/%s", id)
+	if err != nil {
+		return nil, err
+	}
 	var out Broadcast
-	return &out, r.c.get(ctx, "/broadcasts/"+id, &out)
+	if err := r.c.get(ctx, path, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 func (r *BroadcastsResource) Create(ctx context.Context, opts CreateBroadcastOptions) (string, error) {
@@ -46,10 +60,17 @@ func (r *BroadcastsResource) Create(ctx context.Context, opts CreateBroadcastOpt
 		body["senderId"] = opts.SenderID
 	}
 	var out string
-	return out, r.c.post(ctx, "/broadcasts", body, &out)
+	if err := r.c.post(ctx, "/broadcasts", body, &out); err != nil {
+		return "", err
+	}
+	return out, nil
 }
 
 func (r *BroadcastsResource) Update(ctx context.Context, id string, opts UpdateBroadcastOptions) (string, error) {
+	path, err := pathf("/broadcasts/%s", id)
+	if err != nil {
+		return "", err
+	}
 	body := map[string]any{
 		"name":    opts.Name,
 		"message": opts.Message,
@@ -64,22 +85,44 @@ func (r *BroadcastsResource) Update(ctx context.Context, id string, opts UpdateB
 		body["scheduleAt"] = opts.ScheduleAt.UTC().Format(time.RFC3339)
 	}
 	var out string
-	return out, r.c.put(ctx, "/broadcasts/"+id, body, &out)
+	if err := r.c.put(ctx, path, body, &out); err != nil {
+		return "", err
+	}
+	return out, nil
 }
 
 func (r *BroadcastsResource) Send(ctx context.Context, id string) error {
-	return r.c.post(ctx, "/broadcasts/"+id+"/send", map[string]any{}, nil)
+	path, err := pathf("/broadcasts/%s/send", id)
+	if err != nil {
+		return err
+	}
+	return r.c.post(ctx, path, map[string]any{}, nil)
 }
 
 func (r *BroadcastsResource) Cancel(ctx context.Context, id string) error {
-	return r.c.post(ctx, "/broadcasts/"+id+"/cancel", map[string]any{}, nil)
+	path, err := pathf("/broadcasts/%s/cancel", id)
+	if err != nil {
+		return err
+	}
+	return r.c.post(ctx, path, map[string]any{}, nil)
 }
 
 func (r *BroadcastsResource) Duplicate(ctx context.Context, id string) (string, error) {
+	path, err := pathf("/broadcasts/%s/duplicate", id)
+	if err != nil {
+		return "", err
+	}
 	var out string
-	return out, r.c.post(ctx, "/broadcasts/"+id+"/duplicate", map[string]any{}, &out)
+	if err := r.c.post(ctx, path, map[string]any{}, &out); err != nil {
+		return "", err
+	}
+	return out, nil
 }
 
 func (r *BroadcastsResource) Delete(ctx context.Context, id string) error {
-	return r.c.delete(ctx, "/broadcasts/"+id)
+	path, err := pathf("/broadcasts/%s", id)
+	if err != nil {
+		return err
+	}
+	return r.c.delete(ctx, path)
 }

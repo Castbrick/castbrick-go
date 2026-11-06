@@ -2,8 +2,8 @@ package castbrick
 
 import (
 	"context"
-	"fmt"
 	"net/url"
+	"strconv"
 	"time"
 )
 
@@ -50,7 +50,10 @@ func (r *SmsResource) Send(ctx context.Context, opts SendSmsOptions) (*SendSmsRe
 	}
 
 	var out SendSmsResponse
-	return &out, r.c.post(ctx, "/sms/send", body, &out)
+	if err := r.c.post(ctx, "/sms/send", body, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 func (r *SmsResource) List(ctx context.Context, opts ListSmsOptions) (*PagedResult[SmsMessage], error) {
@@ -63,25 +66,34 @@ func (r *SmsResource) List(ctx context.Context, opts ListSmsOptions) (*PagedResu
 		pageSize = 20
 	}
 
-	path := fmt.Sprintf("/sms?pageNumber=%d&pageSize=%d", page, pageSize)
+	q := url.Values{}
+	q.Set("pageNumber", strconv.Itoa(page))
+	q.Set("pageSize", strconv.Itoa(pageSize))
 	if opts.Status != "" {
-		path += "&status=" + url.QueryEscape(opts.Status)
+		q.Set("status", opts.Status)
 	}
 	if opts.Phone != "" {
-		path += "&phone=" + url.QueryEscape(opts.Phone)
+		q.Set("phone", opts.Phone)
 	}
 	if opts.From != nil {
-		path += "&from=" + url.QueryEscape(opts.From.UTC().Format(time.RFC3339))
+		q.Set("from", opts.From.UTC().Format(time.RFC3339))
 	}
 	if opts.To != nil {
-		path += "&to=" + url.QueryEscape(opts.To.UTC().Format(time.RFC3339))
+		q.Set("to", opts.To.UTC().Format(time.RFC3339))
 	}
 
 	var out PagedResult[SmsMessage]
-	return &out, r.c.get(ctx, path, &out)
+	if err := r.c.getQuery(ctx, "/sms", q, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 // CancelScheduled cancels a scheduled SMS by its message ID.
 func (r *SmsResource) CancelScheduled(ctx context.Context, messageID string) error {
-	return r.c.delete(ctx, "/sms/"+messageID)
+	path, err := pathf("/sms/%s", messageID)
+	if err != nil {
+		return err
+	}
+	return r.c.delete(ctx, path)
 }
