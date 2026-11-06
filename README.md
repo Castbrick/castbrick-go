@@ -128,22 +128,54 @@ err = cb.Webhooks.Create(ctx, castbrick.CreateWebhookOptions{
 
 ```go
 _, err := cb.SMS.Send(ctx, castbrick.SendSmsOptions{...})
+
 var apiErr *castbrick.APIError
-if errors.As(err, &apiErr) {
-    fmt.Printf("%d: %s\n", apiErr.StatusCode, apiErr.Body)
+switch {
+case errors.As(err, &apiErr):
+    // apiErr.Message holds the API error message, apiErr.Body the raw body (max 64 KiB).
+    fmt.Printf("%d: %s\n", apiErr.StatusCode, apiErr.Message)
     // 401 → invalid or revoked API key
     // 402 → insufficient credits
     // 422 → validation error
+case errors.Is(err, castbrick.ErrInvalidID):
+    // An ID was empty or contained characters such as "/", "?", "#" or "..".
+case errors.Is(err, castbrick.ErrInvalidConfig):
+    // Empty API key or an unsafe base URL (see "Security").
 }
 ```
+
+On error, methods return a `nil` result together with the error.
 
 ## Custom HTTP client
 
 ```go
-cb := castbrick.NewWithOptions("your_api_key", "https://api.castbrick.co", &http.Client{
+// An empty base URL selects the production API.
+cb := castbrick.NewWithOptions("your_api_key", "", &http.Client{
     Timeout: 10 * time.Second,
 })
 ```
+
+A custom client is used as-is: always set a `Timeout`.
+
+## Security
+
+The SDK applies these safeguards by default:
+
+- **Resource IDs are validated and escaped.** IDs that are empty, longer than 256 characters, or contain `/`, `\`, `?`, `#`, `%`, control characters, `.` or `..` are rejected with `ErrInvalidID` before any request is sent. This means an ID taken from user input cannot redirect a call to another endpoint.
+- **HTTPS is required.** The base URL must use `https`. Plain `http` is only accepted for `localhost`, `127.0.0.1` and `::1`. URLs with credentials, a query or a fragment are rejected.
+- **The API key stays on its origin.** The default HTTP client refuses redirects that change scheme or host (including the port).
+- **Requests are bounded.** The default client times out after 30 seconds, and responses over 10 MiB are rejected with `ErrResponseTooLarge`.
+- **Errors are safe to log.** `APIError.Error()` is truncated to 512 bytes and has control characters removed.
+
+Recommendations for applications that use the SDK:
+
+- Keep the API key in a secret manager or environment variable, never in source code.
+- Validate the format of IDs that come from your own users (for example as UUIDs) before passing them to the SDK, and check that they belong to the current user.
+- Never fill `InitiatePaymentRequest` redirect URLs from user input without an allowlist.
+- Pass a `context` with a deadline to every call.
+- Build your application with a supported, patched Go release, because security fixes in `net/http` and `crypto/tls` come from your toolchain.
+
+To report a vulnerability, see [SECURITY.md](SECURITY.md).
 
 ## License
 
