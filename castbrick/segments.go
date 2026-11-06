@@ -2,8 +2,7 @@ package castbrick
 
 import (
 	"context"
-	"fmt"
-	"net/http"
+	"net/url"
 	"strconv"
 )
 
@@ -18,57 +17,44 @@ type ListSegmentsOptions struct {
 }
 
 func (r *SegmentsResource) List(ctx context.Context, opts ListSegmentsOptions) (*PagedResult[Segment], error) {
-	req, err := r.c.newRequest(ctx, http.MethodGet, "/audience/segments", nil)
-	if err != nil {
-		return nil, err
-	}
-
-	q := req.URL.Query()
+	q := url.Values{}
 	if opts.Page > 0 {
-		q.Add("pageNumber", strconv.Itoa(opts.Page))
+		q.Set("pageNumber", strconv.Itoa(opts.Page))
 	}
 	if opts.PageSize > 0 {
-		q.Add("pageSize", strconv.Itoa(opts.PageSize))
+		q.Set("pageSize", strconv.Itoa(opts.PageSize))
 	}
 	if opts.Search != nil && *opts.Search != "" {
-		q.Add("search", *opts.Search)
+		q.Set("search", *opts.Search)
 	}
-	req.URL.RawQuery = q.Encode()
 
 	var res PagedResult[Segment]
-	if err := r.c.do(req, &res); err != nil {
+	if err := r.c.getQuery(ctx, "/audience/segments", q, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
 }
 
 func (r *SegmentsResource) Create(ctx context.Context, data CreateSegmentRequest) (string, error) {
-	req, err := r.c.newRequest(ctx, http.MethodPost, "/audience/segments", data)
-	if err != nil {
-		return "", err
-	}
-
 	var res string
-	if err := r.c.do(req, &res); err != nil {
+	if err := r.c.post(ctx, "/audience/segments", data, &res); err != nil {
 		return "", err
 	}
 	return res, nil
 }
 
 func (r *SegmentsResource) Update(ctx context.Context, id string, data UpdateSegmentRequest) error {
-	req, err := r.c.newRequest(ctx, http.MethodPut, fmt.Sprintf("/audience/segments/%s", id), data)
+	path, err := pathf("/audience/segments/%s", id)
 	if err != nil {
 		return err
 	}
-
-	return r.c.do(req, nil)
+	return r.c.put(ctx, path, data, nil)
 }
 
 func (r *SegmentsResource) Delete(ctx context.Context, id string) error {
-	req, err := r.c.newRequest(ctx, http.MethodDelete, fmt.Sprintf("/audience/segments/%s", id), nil)
+	path, err := pathf("/audience/segments/%s", id)
 	if err != nil {
 		return err
 	}
-
-	return r.c.do(req, nil)
+	return r.c.delete(ctx, path)
 }

@@ -5,41 +5,32 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: read
+
 jobs:
-  test:
+  verify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          go-version: '1.22'
+          persist-credentials: false
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
 
       - name: Build & vet
         run: |
           go build ./...
           go vet ./...
 
-      - name: Run Tests
-        run: go test -v ./...
+      - name: Test
+        run: go test -race -count=1 ./...
 
-  release:
-    needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.22'
-
-      - name: Build & vet
-        run: |
-          go build ./...
-          go vet ./...
-
-      - name: Tag is published to pkg.go.dev automatically
+      - name: Announce
         run: |
           echo "Module: $(go list -m)"
           echo "Version: ${{ github.ref_name }}"
-          echo "pkg.go.dev will index this release automatically once pushed."
+          echo "pkg.go.dev will index this release automatically."
+          echo "Note: a pushed tag is immutable in the Go module proxy. CI on main must be green before tagging."

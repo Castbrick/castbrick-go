@@ -4,11 +4,11 @@ import "time"
 
 // PagedResult is a generic paginated response.
 type PagedResult[T any] struct {
-	Items          []T  `json:"items"`
-	TotalCount     int  `json:"totalCount"`
-	PageNumber     int  `json:"pageNumber"`
-	TotalPages     int  `json:"totalPages"`
-	HasNextPage    bool `json:"hasNextPage"`
+	Items           []T  `json:"items"`
+	TotalCount      int  `json:"totalCount"`
+	PageNumber      int  `json:"pageNumber"`
+	TotalPages      int  `json:"totalPages"`
+	HasNextPage     bool `json:"hasNextPage"`
 	HasPreviousPage bool `json:"hasPreviousPage"`
 }
 
@@ -23,19 +23,19 @@ type SendSmsResponse struct {
 }
 
 type SmsMessage struct {
-	ID            string     `json:"id"`
-	ContactName   *string    `json:"contactName,omitempty"`
-	RecipientPhone string    `json:"recipientPhone"`
-	Message       string     `json:"message"`
-	CampaignName  *string    `json:"campaignName,omitempty"`
-	CampaignID    *string    `json:"campaignId,omitempty"`
-	SenderID      *string    `json:"senderId,omitempty"`
-	Status        string     `json:"status"`
-	ErrorMessage  *string    `json:"errorMessage,omitempty"`
-	RetryCount    int        `json:"retryCount"`
-	ScheduledAt   *time.Time `json:"scheduledAt,omitempty"`
-	SentAt        *time.Time `json:"sentAt,omitempty"`
-	DeliveredAt   *time.Time `json:"deliveredAt,omitempty"`
+	ID             string     `json:"id"`
+	ContactName    *string    `json:"contactName,omitempty"`
+	RecipientPhone string     `json:"recipientPhone"`
+	Message        string     `json:"message"`
+	CampaignName   *string    `json:"campaignName,omitempty"`
+	CampaignID     *string    `json:"campaignId,omitempty"`
+	SenderID       *string    `json:"senderId,omitempty"`
+	Status         string     `json:"status"`
+	ErrorMessage   *string    `json:"errorMessage,omitempty"`
+	RetryCount     int        `json:"retryCount"`
+	ScheduledAt    *time.Time `json:"scheduledAt,omitempty"`
+	SentAt         *time.Time `json:"sentAt,omitempty"`
+	DeliveredAt    *time.Time `json:"deliveredAt,omitempty"`
 }
 
 // ── Contacts ─────────────────────────────────────────────────────────────────
